@@ -1,0 +1,67 @@
+config:
+  target: http://localhost:8645
+  phases:
+    - duration: 1
+      arrivalCount: 1
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "../helpers/helpers.js"
+  variables:
+    from: "0x83B3525e17F9eAA92dAE3f9924cc333c94C7E98a"
+    to: "0x8AB21C65041778DFc7eC7995F9cDef3d5221a5ad"
+    amount: 1000
+    color: 0
+    privKey: "0xbd54b17c48ac1fc91d5ef2ef02e9911337f8758e93c801b619e5d178094486cc"
+scenarios:
+  - flow:
+    - get:
+        url: "http://localhost:3000/state"
+        capture: [{
+          json: "$.balances",
+          as: "balances"},
+          {json: "$.unspent",
+          as: "unspent"}]
+    - log: "Balances: {{ balances }}"
+    - log: "Unspent: {{ unspent }}"
+    - post:
+        url: "/"
+        body: '{"method":"eth_getBalance","params":["0x83B3525e17F9eAA92dAE3f9924cc333c94C7E98a"],"id":1,"jsonrpc":"2.0"}'
+        capture:
+          json: "$"
+          as: "balance"
+    - log: "Balance: {{ balance }}"
+    - post:
+        url: "/"
+        body: '{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}'
+        capture:
+          json: "$.result"
+          as: "lastBlockNum"
+    - log: "Last Block Number: {{ lastBlockNum }}"
+    - post:
+        url: "/"
+        body: "{\"method\":\"eth_getBlockByNumber\",\"params\":[\"{{ lastBlockNum }}\",true],\"id\":1,\"jsonrpc\":\"2.0\"}"
+        capture:
+          json: "$"
+          as: "lastBlock"
+    - log: "Last Block: {{ lastBlock }}"
+    - function: "makeTransfer"
+    - log: "Transfer: {{ transfer}}"
+    - log: "Transfer Hex: {{ transferHex }}"
+    - post:
+#        url: "/"
+#        body: "{\"method\":\"eth_sendRawTransaction\",\"params\":[\"{{ transferHex }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
+        url: "http://localhost:3000/txs"
+        json:
+          encoded: "{{ transferHex }}"
+        capture:
+          json: "$"
+          as: "txResponse"
+    - log: "Tx Response: {{ txResponse }}"
+    - post:
+        url: "/"
+        body: "{\"method\":\"eth_getTransactionReceipt\",\"params\":[\"{{ transferHex }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
+        capture:
+          json: "$"
+          as: "txData"
+    - log: "Tx Data: {{ txData }}"
