@@ -56,7 +56,7 @@ function makeTransfer(context, ee, next) {
   );
   const trans = Tx.transfer(inputs, outputs).signAll(privKey);
   context.vars['transfer'] = trans;
-  context.vars['transferHex'] = trans.hex();
+  context.vars['transferHex'] = trans.toRaw();
 
   return next();
 }
