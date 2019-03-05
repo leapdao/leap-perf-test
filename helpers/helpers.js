@@ -22,8 +22,7 @@ function unspentForAddress(unspent, address, color) {
 };
 
 function makeTransfer(context, ee, next) {
-  let balances = context.vars['balances']; 
-  let unspent = context.vars['unspent'];
+  let unspents = context.vars['unspents'];
   let from = context.vars['from'];
   let to = context.vars['to'];
   let amount = context.vars['amount'];
@@ -33,21 +32,14 @@ function makeTransfer(context, ee, next) {
   let fromAddr = from.toLowerCase();
   to = to.toLowerCase();
 
-  const colorBalances = balances[color] || {};
-  const balance = colorBalances[fromAddr] || 0;
-
-  if (balance < amount) {
-    throw new Error('Insufficient balance');
-  }
-
-  const senderUnspent = unspentForAddress(unspent, from, color).map(u => ({
+  const utxos = unspents.map(u => ({
     output: u.output,
     outpoint: Outpoint.fromRaw(u.outpoint),
   }));
 
-  const inputs = helpers.calcInputs(senderUnspent, from, amount, color);
+  const inputs = helpers.calcInputs(utxos, from, amount, color);
   const outputs = helpers.calcOutputs(
-    senderUnspent,
+    utxos,
     inputs,
     fromAddr,
     to,
@@ -56,7 +48,7 @@ function makeTransfer(context, ee, next) {
   );
   const trans = Tx.transfer(inputs, outputs).signAll(privKey);
   context.vars['transfer'] = trans;
-  context.vars['transferHex'] = trans.toRaw();
+  context.vars['transferHex'] = trans.hex();
 
   return next();
 }
