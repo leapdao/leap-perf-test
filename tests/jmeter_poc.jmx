@@ -10,12 +10,12 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ADDR_1" elementType="Argument">
             <stringProp name="Argument.name">ADDR_1</stringProp>
-            <stringProp name="Argument.value">0x83B3525e17F9eAA92dAE3f9924cc333c94C7E98a</stringProp>
+            <stringProp name="Argument.value">0x83b3525e17f9eaa92dae3f9924cc333c94c7e98a</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ADDR_2" elementType="Argument">
             <stringProp name="Argument.name">ADDR_2</stringProp>
-            <stringProp name="Argument.value">0x8AB21C65041778DFc7eC7995F9cDef3d5221a5ad</stringProp>
+            <stringProp name="Argument.value">0xaf0939af286a35dbfab7ded7c777a5f6e8be26a8</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ADDR_3" elementType="Argument">
@@ -26,6 +26,11 @@
           <elementProp name="privKey" elementType="Argument">
             <stringProp name="Argument.name">privKey</stringProp>
             <stringProp name="Argument.value">0xbd54b17c48ac1fc91d5ef2ef02e9911337f8758e93c801b619e5d178094486cc</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ADDR_BCK" elementType="Argument">
+            <stringProp name="Argument.name">ADDR_BCK</stringProp>
+            <stringProp name="Argument.value">0x6cb117a635dc7633b42089c607fdfc5c60b7d679</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -84,7 +89,7 @@
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
   &quot;method&quot;: &quot;plasma_unspent&quot;,&#xd;
-  &quot;params&quot;: [&quot;${ADDR_1}&quot;],&#xd;
+  &quot;params&quot;: [&quot;${ADDR_2}&quot;],&#xd;
   &quot;id&quot;: 1,&#xd;
   &quot;jsonrpc&quot;: &quot;2.0&quot;&#xd;
 }</stringProp>
@@ -92,7 +97,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">34.250.91.182</stringProp>
+            <stringProp name="HTTPSampler.domain">node1.testnet.leapdao.org</stringProp>
             <stringProp name="HTTPSampler.port">8645</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -123,7 +128,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">34.250.91.182</stringProp>
+            <stringProp name="HTTPSampler.domain">node1.testnet.leapdao.org</stringProp>
             <stringProp name="HTTPSampler.port">8645</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -154,7 +159,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">34.250.91.182</stringProp>
+            <stringProp name="HTTPSampler.domain">node1.testnet.leapdao.org</stringProp>
             <stringProp name="HTTPSampler.port">8645</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -192,7 +197,7 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">34.250.91.182</stringProp>
+            <stringProp name="HTTPSampler.domain">node1.testnet.leapdao.org</stringProp>
             <stringProp name="HTTPSampler.port">8645</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
@@ -207,12 +212,27 @@
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="makeTransfer" enabled="true">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+            <stringProp name="scriptLanguage">ecmascript</stringProp>
             <stringProp name="parameters"></stringProp>
-            <stringProp name="script">load(&quot;../helpers/helpers.js&quot;);</stringProp>
-            <stringProp name="scriptLanguage">javascript</stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">function unspentForAddress(unspent, address, color) {
+  return Object.keys(unspent)
+    .filter(
+      k =&gt;
+        unspent[k] &amp;&amp;
+        unspent[k].address.toLowerCase() === address.toLowerCase() &amp;&amp;
+        (color !== undefined ? unspent[k].color === color : true)
+    )
+    .map(k =&gt; ({
+      outpoint: k,
+      output: unspent[k],
+    }))
+    .sort((a, b) =&gt; {
+      return a.output.value - b.output.value; 
+    });
+};</stringProp>
           </JSR223Sampler>
           <hashTree/>
           <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
