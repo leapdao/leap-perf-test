@@ -3,8 +3,9 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 1
-      arrivalCount: 1
+    - duration: 10
+      arrivalRate: 1
+      #arrivalCount: 1
   defaults:
     headers:
       Content-Type: "application/json"
@@ -27,7 +28,7 @@ config:
   variables:
     amount: 100
     color: 0
-    startBlock: 45751
+    startBlock: 45805
 scenarios:
   - flow:
     - log: "From: {{ from }} to {{ to }}"
@@ -37,7 +38,6 @@ scenarios:
         capture:
           json: "$.result"
           as: "unspents"
-    - log: "Unspents of {{ from }}: {{ unspents }}"
     - post:
         url: "/"
         body: "{\"method\":\"eth_getBalance\",\"params\":[\"{{ from }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
