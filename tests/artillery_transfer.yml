@@ -1,8 +1,10 @@
 config:
   target: http://node1.testnet.leapdao.org:8645
+  plugins:
+    expect: {}
   phases:
-    - duration: 60
-      arrivalCount: 10
+    - duration: 1
+      arrivalCount: 1
   defaults:
     headers:
       Content-Type: "application/json"
@@ -58,4 +60,6 @@ scenarios:
         capture:
           json: "$"
           as: "txData"
+        expect:
+          - hasProperty: 'result.blockNumber'
     - log: "Tx Data: {{ txData }}"
