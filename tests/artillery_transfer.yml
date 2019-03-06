@@ -3,7 +3,7 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 10
+    - duration: 50
       arrivalRate: 1
       #arrivalCount: 1
   defaults:
@@ -28,7 +28,7 @@ config:
   variables:
     amount: 100
     color: 0
-    startBlock: 45805
+    startBlock: 45948
 scenarios:
   - flow:
     - log: "From: {{ from }} to {{ to }}"
@@ -51,6 +51,7 @@ scenarios:
         capture:
           json: "$"
           as: "txResponse"
+    - think: 3
     - post:
         url: "/"
         body: "{\"method\":\"eth_getTransactionReceipt\",\"params\":[\"{{ txResponse.result }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
