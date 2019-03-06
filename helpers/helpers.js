@@ -53,4 +53,18 @@ function makeTransfer(context, ee, next) {
   return next();
 }
 
-module.exports = { formatHostname, unspentForAddress, makeTransfer };
+function logResult(context, ee, next) {
+   const startBlock = context.vars['startBlock'];
+   const currBlock = parseInt(context.vars['txData'].result.blockNumber, 16);
+   const blockTxs = context.vars['blockData'].result.transactions.length;
+
+   //ee.emit('customStat', { stat: 'Current Block', value: currBlock });
+   //ee.emit('customStat', { stat: 'Blocks Passed', value: (currBlock - startBlock) });
+   console.log('Current Block:', currBlock);
+   console.log('Blocks Passed:', currBlock - startBlock);
+   ee.emit('customStat', { stat: 'Transactions in Block', value: blockTxs });
+
+   return next();
+}
+
+module.exports = { formatHostname, unspentForAddress, makeTransfer, logResult };

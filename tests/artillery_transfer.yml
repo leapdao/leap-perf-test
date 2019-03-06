@@ -27,6 +27,7 @@ config:
   variables:
     amount: 100
     color: 0
+    startBlock: 45751
 scenarios:
   - flow:
     - log: "From: {{ from }} to {{ to }}"
@@ -43,17 +44,13 @@ scenarios:
         capture:
           json: "$"
           as: "balance"
-    - log: "Balance: {{ balance }}"
     - function: "makeTransfer"
-    - log: "Transfer: {{ transfer}}"
-    - log: "Transfer Hex: {{ transferHex }}"
     - post:
         url: "/"
         body: "{\"method\":\"eth_sendRawTransaction\",\"params\":[\"{{ transferHex }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
         capture:
           json: "$"
           as: "txResponse"
-    - log: "Tx Response: {{ txResponse }}"
     - post:
         url: "/"
         body: "{\"method\":\"eth_getTransactionReceipt\",\"params\":[\"{{ txResponse.result }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
@@ -62,4 +59,10 @@ scenarios:
           as: "txData"
         expect:
           - hasProperty: 'result.blockNumber'
-    - log: "Tx Data: {{ txData }}"
+    - post:
+        url: "/"
+        body: "{\"method\":\"eth_getBlockByNumber\",\"params\":[\"{{ txData.result.blockNumber }}\",true],\"id\":1,\"jsonrpc\":\"2.0\"}"
+        capture:
+          json: "$"
+          as: "blockData"
+    - function: "logResult"
