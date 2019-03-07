@@ -38,6 +38,8 @@ scenarios:
         capture:
           json: "$.result"
           as: "unspents"
+        expect:
+          - hasProperty: 'result[0].outpoint'
     - post:
         url: "/"
         body: "{\"method\":\"eth_getBalance\",\"params\":[\"{{ from }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
