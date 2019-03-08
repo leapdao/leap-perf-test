@@ -1,0 +1,28 @@
+#This script is only to check balances for addresses from payload. it doesn't generate any real load
+config:
+  target: http://node1.testnet.leapdao.org:8645
+  phases:
+    - duration: 100
+      arrivalRate: 1
+      #arrivalCount: 1
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "../helpers/helpers.js"
+  payload:
+    -
+      path: "./out.csv"
+      fields:
+        - "from"
+      order: sequence
+      cast: false
+      skipHeader: true
+scenarios:
+  - flow:
+    - post:
+        url: "/"
+        body: "{\"method\":\"eth_getBalance\",\"params\":[\"{{ from }}\"],\"id\":1,\"jsonrpc\":\"2.0\"}"
+        capture:
+          json: "$.result"
+          as: "balance"
+    - log: "Balance of {{ from }}: {{ balance }}"
