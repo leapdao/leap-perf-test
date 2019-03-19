@@ -54,15 +54,45 @@ function makeTransfer(context, ee, next) {
 }
 
 function logResult(context, ee, next) {
-   const startBlock = context.vars['startBlock'];
-   const currBlock = parseInt(context.vars['txData'].result.blockNumber, 16);
-   const blockTxs = context.vars['blockData'].result.transactions.length;
+  const noReceipt = context.vars['noReceipt'];
 
-   console.log('Current Block:', currBlock);
-   console.log('Blocks Passed:', currBlock - startBlock);
-   ee.emit('customStat', { stat: 'Transactions in Block', value: blockTxs });
+  if (!noReceipt) {
+    const startBlock = context.vars['startBlock'];
+    const currBlock = parseInt(context.vars['txData'].result.blockNumber, 16);
+    const blockTxs = context.vars['blockData'].result.transactions.length;
+    const waitTime = context.vars['waitTime'];
+
+    console.log('Current Block:', currBlock);
+    console.log('Blocks Passed:', currBlock - startBlock);
+    ee.emit('customStat', { stat: 'Transactions in Block', value: blockTxs });
+    ee.emit('customStat', { stat: 'Wait time for inclusion', value: waitTime });
+  } else {
+    const tx = context.vars['txResponse'].result;
+    const from = context.vars['from'];
+    const to = context.vars['to'];
+    ee.emit('counter', 'noReceiptReceived', 1);
+    console.log('No receipt received for tx: ', tx, '; From:', from, ' to', to);
+  }
 
    return next();
 }
 
-module.exports = { formatHostname, unspentForAddress, makeTransfer, logResult };
+function checkReceipt(context, next) {
+  let continueLooping = true;
+  let waitTime = context.vars['waitTime'];
+  let threshold = context.vars['receiptThreshold'];
+
+  if (context.vars['txData'].result) {
+    continueLooping = false;
+  } else {
+    waitTime++;
+    context.vars['waitTime'] = waitTime;
+  }
+  if (waitTime > threshold) { //if waiting more than threshold, no point of waiting more - continue
+    context.vars['noReceipt'] = true;
+    continueLooping = false;
+  }
+  return next(continueLooping); // call back with true to loop again
+}
+
+module.exports = { formatHostname, unspentForAddress, makeTransfer, logResult, checkReceipt };
