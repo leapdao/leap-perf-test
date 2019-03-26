@@ -60,7 +60,8 @@ const sendFunds = async(from, to, amount) => {
     const tx = Tx.transfer(inputs, outputs).signAll(from.priv);
 
     // eslint-disable-next-line no-console
-    await rpc("eth_sendRawTransaction", [tx.hex()]);
+    const txHash = await rpc("eth_sendRawTransaction", [tx.hex()]);
+    console.log('txHash:', txHash);
 }
 
 async function run() {
