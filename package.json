@@ -8,7 +8,7 @@
     "csv-writer": "^1.2.0",
     "ethereumjs-wallet": "^0.6.3",
     "jsbi": "^2.0.5",
-    "leap-core": "^0.28.1",
+    "leap-core": "^0.28.3",
     "node-fetch": "^2.3.0"
   }
 }

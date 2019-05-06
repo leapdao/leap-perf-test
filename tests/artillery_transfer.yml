@@ -4,7 +4,7 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 15
+    - duration: 100
       arrivalRate: 3
       #arrivalCount: 1
   defaults:
@@ -29,7 +29,7 @@ config:
   variables:
     amount: 100
     color: 0
-    startBlock: 706
+    startBlock: 6015
     waitTime: 1
     receiptThreshold: 10
     noReceipt: false
@@ -57,6 +57,8 @@ scenarios:
         capture:
           json: "$"
           as: "txResponse"
+        expect:
+          - hasProperty: result
     - loop:
         - think: 1
         - post:

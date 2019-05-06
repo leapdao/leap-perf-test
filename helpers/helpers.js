@@ -66,6 +66,9 @@ function logResult(context, ee, next) {
     console.log('Blocks Passed:', currBlock - startBlock);
     ee.emit('customStat', { stat: 'Transactions in Block', value: blockTxs });
     ee.emit('customStat', { stat: 'Wait time for inclusion', value: waitTime });
+    if (blockTxs == 1) {
+      ee.emit('counter', 'blocksWith1Tx', 1);
+    }
   } else {
     const tx = context.vars['txResponse'].result;
     const from = context.vars['from'];
