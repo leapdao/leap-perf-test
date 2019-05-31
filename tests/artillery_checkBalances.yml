@@ -1,6 +1,6 @@
 #This script is only to check balances for addresses from payload. it doesn't generate any real load
 config:
-  target: http://node1.testnet.leapdao.org:8645
+  target: https://testnet-node.leapdao.org/
   phases:
     - duration: 100
       arrivalRate: 1

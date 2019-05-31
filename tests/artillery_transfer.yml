@@ -1,11 +1,11 @@
 config:
-  target: http://node1.testnet.leapdao.org:8645
+  target: https://testnet-node.leapdao.org/
   #target: http://18.218.2.145:8645
   plugins:
     expect: {}
   phases:
-    - duration: 100
-      arrivalRate: 3
+    - duration: 10
+      arrivalRate: 50
       #arrivalCount: 1
   defaults:
     headers:
@@ -29,7 +29,7 @@ config:
   variables:
     amount: 100
     color: 0
-    startBlock: 6015
+    startBlock: 1910
     waitTime: 1
     receiptThreshold: 10
     noReceipt: false
@@ -70,8 +70,11 @@ scenarios:
       whileTrue: "checkReceipt"
     - post:
         url: "/"
+        ifTrue: "not noReceipt"
         body: "{\"method\":\"eth_getBlockByNumber\",\"params\":[\"{{ txData.result.blockNumber }}\",true],\"id\":1,\"jsonrpc\":\"2.0\"}"
         capture:
           json: "$"
           as: "blockData"
+        expect:
+          - hasProperty: result.transactions
     - function: "logResult"
